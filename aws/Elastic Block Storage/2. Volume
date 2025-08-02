@@ -1,158 +1,58 @@
-📘 What is EBS?
-Block-level storage device for EC2.
+# 📦 Amazon EBS (Elastic Block Store) Notes
 
-Used for:
+Amazon **EBS (Elastic Block Store)** provides persistent, block-level storage volumes for use with EC2 instances.
 
-OS boot volume
+---
 
-Application data storage
+## 📁 What is EBS Volume?
 
-Database storage
+- Network-attached virtual hard disk for EC2
+- Independent of EC2 instance lifecycle (persistent)
+- Exists in a specific **Availability Zone (AZ)**
+- Can be attached/detached from EC2
+- Can be formatted, mounted, resized
+- Can be backed up using **snapshots**
+- Cannot be shared across AZs (copy snapshot instead)
 
-Works only with EC2 instances.
+---
 
-Persistent storage: Data remains even after system reboot.
+## 🔍 EBS Volume Types
 
-Resides in same Availability Zone as the EC2 instance.
+| Volume Type     | Use Case                        | Performance     | Cost        |
+|-----------------|----------------------------------|------------------|-------------|
+| `gp3` (default) | General use (boot/app/data)      | Balanced IOPS    | Medium      |
+| `io1/io2`       | Databases, high-performance apps | Highest IOPS     | Expensive   |
+| `st1`           | Big data, streaming logs         | High throughput  | Low         |
+| `sc1`           | Infrequent access data           | Lowest cost      | Very Low    |
+| `Magnetic`      | Deprecated legacy storage        | Very low         | Deprecated  |
 
-⚙️ Key Features
-Feature	Description
-AZ Specific	EC2 and EBS must be in the same AZ.
-Attach/Detach	Can attach/detach from EC2.
-Encryption	Supports encryption at rest and in-transit.
-Resizable	Only volume size can be increased.
-Multi-Attach	Supported with io1/io2 for multiple EC2s.
-Durable	Highly reliable (replicated within AZ).
+---
 
-🪛 How to Use EBS (Console)
-✅ Create and Attach Volume
-Go to EC2 Dashboard > Volumes > Create Volume.
+## 🔧 Creating & Attaching EBS (Console Steps)
 
-Choose:
+1. Go to **EC2 → Volumes → Create Volume**
+2. Select size, AZ (same as EC2), and type
+3. After creation → **Attach Volume** to your instance
 
-Volume Type (gp2/gp3/io1/etc.)
+---
 
-Size (in GiB)
+## 🖥️ Linux EC2: Format & Mount EBS
 
-Availability Zone
+<details>
+<summary>📄 CLI Commands</summary>
 
-Click Create Volume.
-
-Select volume > Actions > Attach Volume
-
-Select EC2 instance & device name (/dev/xvdf) > Attach.
-
-🔌 Mount Volume on EC2 (Linux)
-bash
-Copy
-Edit
-# Step 1: Connect to EC2
-ssh -i "key.pem" ec2-user@<public-ip>
-
-# Step 2: Check attached disk
+```bash
+# Check attached block devices
 lsblk
 
-# Step 3: Make filesystem
-sudo mkfs -t ext4 /dev/xvdf
+# Format to ext4
+sudo mkfs.ext4 /dev/xvdf
 
-# Step 4: Make mount directory
-sudo mkdir /data
+# Create mount point
+sudo mkdir /mnt/data
 
-# Step 5: Mount volume
-sudo mount /dev/xvdf /data
+# Mount volume
+sudo mount /dev/xvdf /mnt/data
 
-# Step 6: Make it permanent (optional)
-sudo echo '/dev/xvdf /data ext4 defaults,nofail 0 2' | sudo tee -a /etc/fstab
-🔄 Unmount and Detach Volume
-bash
-Copy
-Edit
-# Step 1: Unmount
-sudo umount /data
-
-# Step 2: Detach from EC2 (from AWS Console or CLI)
-🧱 Volume Types
-Type	Use Case	IOPS	Notes
-gp2	General purpose	3 IOPS/GB	Old generation
-gp3	General purpose	3000 IOPS baseline	Cost-efficient
-io1/io2	High performance DB	Up to 64K	Expensive but fast
-sc1	Cold HDD	Low IOPS	Cheapest
-st1	Throughput HDD	Streaming workloads	For logs/media
-
-📸 EBS Snapshots
-Snapshots are point-in-time backups of EBS volumes stored in S3 (internally managed by AWS, not in your bucket).
-
-Incremental: Only changed blocks are saved.
-
-Used for backup, restore, disaster recovery, and migration.
-
-Can be shared with other AWS accounts or copied to other regions.
-
-✨ Common Use Cases
-Backup data regularly
-
-Create AMI from volume
-
-Copy data across regions
-
-Store snapshot, delete volume (save cost)
-
-🛠️ Steps: Create Snapshot (Console)
-Go to EC2 > Volumes.
-
-Select volume → Actions > Create Snapshot.
-
-Add description → Create.
-
-🔁 Restore Volume from Snapshot
-Go to Snapshots.
-
-Select snapshot → Actions > Create Volume.
-
-Choose size, AZ → Create.
-
-Attach it to EC2 like normal volume.
-
-💣 Delete Snapshot
-Go to Snapshots.
-
-Select → Actions > Delete Snapshot.
-
-🖥️ CLI Commands
-📷 Create Snapshot
-bash
-Copy
-Edit
-aws ec2 create-snapshot \
-  --volume-id vol-xxxxxxxx \
-  --description "Backup 1"
-📜 List Snapshots
-bash
-Copy
-Edit
-aws ec2 describe-snapshots \
-  --owner-ids self
-🔁 Create Volume from Snapshot
-bash
-Copy
-Edit
-aws ec2 create-volume \
-  --availability-zone ap-south-1a \
-  --snapshot-id snap-xxxxxxxx \
-  --volume-type gp3
-❌ Delete Snapshot
-bash
-Copy
-Edit
-aws ec2 delete-snapshot \
-  --snapshot-id snap-xxxxxxxx
-🖼️ Diagram: EBS Snapshot Workflow
-mermaid
-Copy
-Edit
-graph TD;
-  A[EC2 Instance] --> B[EBS Volume]
-  B --> C[Snapshot]
-  C --> D[Stored in S3 (internal)]
-  C --> E[Used to Restore Volume]
-  C --> F[Copied to Other Region]
+# Verify
+df -h
