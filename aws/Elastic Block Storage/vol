@@ -42,7 +42,8 @@ Amazon EBS (Elastic Block Store) is a durable, block-level storage service provi
 2. Click **Create Volume**.
 3. Select:
 
-   * Volume type (e.g., gp3 or gp2 for general purpose)
+   * Vo
+lume type (e.g., gp3 or gp2 for general purpose)
    * Size (e.g., 8 GiB)
    * Availability Zone (must match EC2 instance AZ)
 4. Click **Create Volume**.
@@ -154,6 +155,32 @@ EBS Volume
 │   └── umount /data
 └── Detach
     └── Via Console → Detach
+```
+
+---
+
+## 📸 CLI Snapshots & Outputs (Examples)
+
+```bash
+# Check disk layout:
+lsblk
+
+NAME    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+xvda    202:0    0    8G  0 disk
+└─xvda1 202:1    0    8G  0 part /
+xvdf    202:80   0   20G  0 disk
+
+# Format disk:
+sudo mkfs -t ext4 /dev/xvdf
+mke2fs 1.45.6 (20-Mar-2020)
+Creating filesystem with 5242880 4k blocks and 1310720 inodes
+
+# Mount and verify:
+sudo mount /dev/xvdf /data
+df -h
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/xvda1      8G    2G   6G   25%  /
+/dev/xvdf       20G   0G   20G   0%  /data
 ```
 
 ---
