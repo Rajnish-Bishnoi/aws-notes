@@ -1,42 +1,50 @@
-📌 What is Userdata?
-Userdata is a script that runs automatically when an EC2 instance is launched.
+# ☁️ EC2 Userdata (Bootstrap Script)
 
-It is used to automate initial setup tasks, such as installing software, configuring applications, and setting up environment variables.
+## 📘 What is Userdata?
 
-This script runs only once by default (at the first boot).
+**Userdata** is a script that runs **automatically when an EC2 instance is launched**.  
+It is used to **automate post-installation tasks** such as:
 
-Userdata is commonly used to perform post-installation tasks automatically.
+- Installing software (e.g., Apache, Nginx, Docker)
+- Setting up configurations
+- Initializing files or environments
 
-🧠 Alternate Names:
-Also known as Bootstrap Script.
+> ✅ *Userdata scripts only run ONCE by default (at first boot).*
 
-It helps in zero-touch configuration of the instance.
+---
 
-🔄 Can I re-run Userdata?
-By default, Userdata executes only once at the first launch.
+## 📦 What Comes With a New EC2 Instance?
 
-However, if you want to re-run it:
+By default, an EC2 instance provides:
 
-The instance must be in stopped state.
+- ✅ An **Operating System** (e.g., Amazon Linux, Ubuntu, Windows)
+- ✅ Basic **OS-level configuration**
 
-You can update or replace the Userdata script from the EC2 dashboard.
+But nothing else is pre-installed or configured.
 
-You must manually trigger re-execution by enabling user-data re-run scripts inside the script logic or modifying EC2 instance settings.
+---
 
-📂 What comes with EC2 instance by default?
-When you launch an EC2 instance, it includes:
+## 🪄 Why Use Userdata?
 
-✅ Operating System (e.g., Amazon Linux, Ubuntu, Windows)
+Using a Userdata script, you can:
 
-✅ Base OS Configuration (minimal settings)
+- Set up web servers automatically
+- Deploy apps during boot
+- Configure settings without manual login
+- Launch 10s or 100s of pre-configured EC2s at once
 
-💡 Real-life Example: Web Server Setup
-Goal: You want to launch 50 EC2 instances with a web server (Apache) pre-installed.
+🟡 **Also called:** *Bootstrap script*
 
-Instead of doing this manually for each instance:
+---
 
-Use a Userdata script.
+## 🛠️ Sample Use Case: Apache Web Server Setup
 
-The script installs Apache, starts the service, and hosts a basic website.
+```bash
+#!/bin/bash
+# Example: Install Apache & host a web page
 
-When EC2 boots, the server is ready to serve traffic automatically.
+yum update -y
+yum install httpd -y
+systemctl start httpd
+systemctl enable httpd
+echo "Hello from EC2 - Apache installed using Userdata!" > /var/www/html/index.html
