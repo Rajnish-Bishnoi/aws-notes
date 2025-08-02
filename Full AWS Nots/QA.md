@@ -163,10 +163,6 @@
 50. **Q: GuardDuty kya detect karta hai?**
     A: Suspicious activities, threats using ML.
 
-51–60 continue on next update...
-
----
-
 ### 🔰 Advanced Level (61–100)
 
 61. **Q: Aurora vs RDS kya farak hai?**
