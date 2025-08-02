@@ -1,4 +1,4 @@
-# EC2 (Elastic Compute Cloud) - Beginner Friendly Notes
+# EC2 (Elastic Compute Cloud)
 
 ## Introduction to Amazon EC2:
 
@@ -60,52 +60,4 @@ To create an EC2 instance, the following components are required:
 
 ---
 
-## Practical Lab Examples:
 
-### Linux Instance Lab:
-
-1. **Launch a Linux EC2 instance in the Mumbai Region**
-
-   * AMI: Amazon Linux 2023
-   * Instance type: t2.micro (Free Tier eligible)
-
-2. **Connect using EC2 Instance Connect** (from AWS console):
-
-```bash
-# Create two files:
-echo "This is input file" > input.txt
-echo "This is output file" > output.txt
-```
-
-3. **Connect using MobaXterm**:
-
-   * Use `.pem` file to SSH into instance
-
-```bash
-ls
-# You should see: input.txt and output.txt
-```
-
-### Windows Instance Lab:
-
-1. **Launch a Windows EC2 instance in the Mumbai Region**
-
-   * AMI: Microsoft Windows Server 2022 Base
-   * Instance type: t2.micro
-
-2. **Connect using RDP (Remote Desktop Protocol)**
-
-   * Decrypt password using your `.pem` key
-
-3. **Inside the instance, open Notepad and create files**:
-
-   * result.txt → type: "This is result file"
-   * answer.txt → type: "This is answer file"
-
-4. **Verify files by browsing through File Explorer**
-
----
-
-> ✅ These EC2 labs help you understand how to launch, connect, and work with AWS instances using Linux and Windows operating systems.
-
-Let me know if you want to add images, links, or step-by-step screenshots!
