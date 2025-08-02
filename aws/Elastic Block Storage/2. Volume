@@ -1,58 +1,194 @@
-# 📦 Amazon EBS (Elastic Block Store) Notes
+# Amazon EBS Volumes (Elastic Block Store)
 
-Amazon **EBS (Elastic Block Store)** provides persistent, block-level storage volumes for use with EC2 instances.
-
----
-
-## 📁 What is EBS Volume?
-
-- Network-attached virtual hard disk for EC2
-- Independent of EC2 instance lifecycle (persistent)
-- Exists in a specific **Availability Zone (AZ)**
-- Can be attached/detached from EC2
-- Can be formatted, mounted, resized
-- Can be backed up using **snapshots**
-- Cannot be shared across AZs (copy snapshot instead)
+Amazon EBS (Elastic Block Store) is a durable, block-level storage service provided by AWS. It's used to store data, host applications, and boot EC2 instances. EBS volumes act like external hard drives that are attached to EC2 instances.
 
 ---
 
-## 🔍 EBS Volume Types
+## 📌 Key Concepts
 
-| Volume Type     | Use Case                        | Performance     | Cost        |
-|-----------------|----------------------------------|------------------|-------------|
-| `gp3` (default) | General use (boot/app/data)      | Balanced IOPS    | Medium      |
-| `io1/io2`       | Databases, high-performance apps | Highest IOPS     | Expensive   |
-| `st1`           | Big data, streaming logs         | High throughput  | Low         |
-| `sc1`           | Infrequent access data           | Lowest cost      | Very Low    |
-| `Magnetic`      | Deprecated legacy storage        | Very low         | Deprecated  |
+* **Durable & Persistent**: Data stored on EBS persists even after the EC2 instance is stopped or terminated (unless it's a root volume without `Delete on Termination` disabled).
+* **Block-level Storage**: Like hard drives, ideal for OS, apps, DBs, and log storage.
+* **AZ-Specific**: EBS volumes and EC2 instances must be in the **same Availability Zone (AZ)** to attach.
+* **Network Attached**: The volume is not inside the host but connected via AWS network.
 
 ---
 
-## 🔧 Creating & Attaching EBS (Console Steps)
+## 🔧 Common Use Cases
 
-1. Go to **EC2 → Volumes → Create Volume**
-2. Select size, AZ (same as EC2), and type
-3. After creation → **Attach Volume** to your instance
+* Hosting applications (e.g., web apps, databases)
+* Booting an OS (as root volume)
+* Storing logs or backups
+* High availability and fault tolerance
 
 ---
 
-## 🖥️ Linux EC2: Format & Mount EBS
+## 🧠 Features
 
-<details>
-<summary>📄 CLI Commands</summary>
+| Feature                     | Description                                                                               |
+| --------------------------- | ----------------------------------------------------------------------------------------- |
+| **Attach/Detach**           | Volumes can be attached to one instance at a time (some types support multi-attach).      |
+| **Resize (Only Increase)**  | Volume size can be increased.                                                             |
+| **Encrypted Volumes**       | Encryption at rest using AWS KMS.                                                         |
+| **Multi-Attach (Optional)** | For some EBS volume types, a volume can be attached to multiple instances simultaneously. |
+| **Persistent Storage**      | Data is preserved across instance stops/restarts.                                         |
+
+---
+
+## 🪜 Step-by-Step: Creating & Attaching EBS Volume
+
+### ✅ Step 1: Create a Volume
+
+1. Go to AWS Console → EC2 Dashboard → **Elastic Block Store → Volumes**.
+2. Click **Create Volume**.
+3. Select:
+
+   * Volume type (e.g., gp3 or gp2 for general purpose)
+   * Size (e.g., 8 GiB)
+   * Availability Zone (must match EC2 instance AZ)
+4. Click **Create Volume**.
+
+### ✅ Step 2: Attach Volume to EC2 Instance
+
+1. After volume is created → **Actions → Attach Volume**.
+2. Choose the **EC2 instance ID** from the same AZ.
+3. Click **Attach**.
+
+### ✅ Step 3: Format & Mount the Volume (on EC2)
+
+Run the following commands after connecting to your EC2 instance:
 
 ```bash
-# Check attached block devices
-lsblk
+lsblk                         # Check available block devices and their mount status
+```
 
-# Format to ext4
-sudo mkfs.ext4 /dev/xvdf
+* Shows all storage devices attached, such as `/dev/xvda`, `/dev/xvdf`, etc.
 
-# Create mount point
-sudo mkdir /mnt/data
+```bash
+sudo mkfs -t ext4 /dev/xvdf  # Format the new volume with ext4 file system
+```
 
-# Mount volume
-sudo mount /dev/xvdf /mnt/data
+* Prepares the volume with ext4 so that it can store files.
 
-# Verify
-df -h
+```bash
+sudo mkdir /data             # Create mount point directory to use as mount target
+```
+
+* This directory will act as the access point for the mounted volume.
+
+```bash
+sudo mount /dev/xvdf /data   # Mount the volume to /data
+```
+
+* This makes the volume accessible from `/data` path on your server.
+
+To make the mount **permanent** (persists after reboot):
+
+```bash
+echo '/dev/xvdf /data ext4 defaults,nofail 0 2' | sudo tee -a /etc/fstab
+```
+
+### ✅ Extra Useful Commands:
+
+```bash
+df -h                         # Show disk usage in human-readable format (e.g., GB, MB)
+```
+
+```bash
+sudo blkid                   # Display block device UUID and filesystem type info
+```
+
+```bash
+mount | grep /data           # Verify if the volume is mounted properly on /data
+```
+
+```bash
+sudo chown ec2-user:ec2-user /data   # Change ownership so your user can access /data
+```
+
+---
+
+## 🔄 Step-by-Step: Unmounting and Detaching EBS Volume
+
+### ✅ Step 4: Unmount the Volume (Before Detaching)
+
+```bash
+sudo umount /data            # Unmount the volume
+```
+
+* If the volume is busy, check which process is using it:
+
+```bash
+sudo lsof /data
+```
+
+* Or force unmount (only if necessary):
+
+```bash
+sudo umount -l /data
+```
+
+### ✅ Step 5: Detach Volume from EC2
+
+1. Go to EC2 Dashboard → **Elastic Block Store → Volumes**.
+2. Select the volume → **Actions → Detach Volume**.
+3. Confirm detachment.
+
+Now the volume is safely detached and can be attached to another instance or deleted.
+
+---
+
+## 🧭 Mind Map: EBS Volume Lifecycle
+
+```plaintext
+EBS Volume
+├── Create Volume
+│   └── Choose Type, Size, AZ
+├── Attach to EC2
+│   └── Match AZ → Attach via Console
+├── Format & Mount
+│   ├── mkfs (format)
+│   └── mount to /data
+├── Use Volume
+│   └── Store Logs, Data, etc.
+├── Unmount
+│   └── umount /data
+└── Detach
+    └── Via Console → Detach
+```
+
+---
+
+## 🛑 Notes
+
+* EBS volumes are **charged per GB per month**, plus IOPS (for some types).
+* Deleting the EC2 instance **does not delete the volume** unless `Delete on Termination` is checked.
+* Volumes can be **snapshotted** for backup and **restored** into new volumes.
+
+---
+
+## 💡 Example:
+
+You have a web server EC2 instance and you need to store logs separately. You can:
+
+* Create a 20 GB EBS volume
+* Attach it to your instance
+* Mount it to `/var/logs`
+* Now your logs are stored on a separate persistent disk
+
+---
+
+## 📘 Summary
+
+| Feature                 | Available?        |
+| ----------------------- | ----------------- |
+| Persistent after reboot | ✅                 |
+| Resize volume           | ✅ (Only increase) |
+| Multi-Attach            | ✅ (Some types)    |
+| Encrypted               | ✅                 |
+| AZ Specific             | ✅                 |
+
+---
+
+📝 **Next:** Learn about **Snapshots** (backing up your EBS volume)
+
+> ✅ Tip: Use EBS for important data and enable snapshot backups regularly!
