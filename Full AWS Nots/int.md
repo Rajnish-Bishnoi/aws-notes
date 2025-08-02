@@ -123,4 +123,4 @@
    * By using AWS Cost Explorer, setting budgets, using Auto Scaling, switching to Spot/Reserved instances, and right-sizing resources regularly.
 
 10. **What does cloud security mean to you?**
-
+   * It means applying the principle of least privilege, enforcing IAM best practices, encrypting data at rest/in transit, using monitoring tools like CloudTrail and GuardDuty, and staying compliant with standards like GDPR and HIPAA.
