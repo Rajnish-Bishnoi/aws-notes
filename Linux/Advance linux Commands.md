@@ -1,83 +1,87 @@
 # 🧠 Advanced Linux Commands
 
-| Command / Keyword    | Full Form / Meaning                   | Example                                  |
-|----------------------|----------------------------------------|-------------------------------------------|
-| `#!/bin/bash`        | Shebang (defines Bash shell)          | `#!/bin/bash`                             |
-| `echo`               | Echo (print text or variable)         | `echo "Hello, world!"`                    |
-| `read`               | Read (user input)                     | `read name` → `echo "Hi, $name"`          |
-| `if / else / fi`     | Conditional branching                 | `if [ -f file.txt ]; then echo yes; fi`   |
-| `for / do / done`    | Looping                              | `for i in {1..3}; do echo "Item $i"; done`|
-| `while / do / done`  | Loop while condition true             | `count=1; while [ $count -le 3 ]; do echo $count; ((count++)); done` |
-| `case / esac`        | Multi-branch conditional              | `case $1 in start) echo "Start";; *) echo "Other";; esac` |
-| `function`           | Define reusable function              | `function greet { echo "Hello, $1"; } greet Joe` |
-| `exit`               | Exit script with status code          | `exit 0`                                  |
-| `cron`, `crontab -e` | Schedule recurring tasks              | `*/5 * * * * /home/ec2-user/script.sh`    |
+| Command / Keyword    | Full Form / Meaning                         | Example                                          |
+|----------------------|----------------------------------------------|--------------------------------------------------|
+| `#!/bin/bash`        | **Shebang** – defines shell for script       | `#!/bin/bash` at the top of a `.sh` file        |
+| `echo`               | **Echo** – display output                    | `echo "Hello, Cloud!"`                          |
+| `read`               | **Read** – accept user input                 | `read name` → `echo "Hi, $name"`                |
+| `if / else / fi`     | **If-Else-Fi** – conditional branching       | `if [ -f file.txt ]; then echo yes; fi`         |
+| `for / do / done`    | **For loop** – repeat code                   | `for i in {1..3}; do echo $i; done`             |
+| `while / do / done`  | **While loop** – loop while condition true   | `while true; do echo hi; sleep 1; done`         |
+| `case / esac`        | **Case statement** – switch-like logic       | `case $1 in start) echo start;; esac`           |
+| `function`           | **Function** – reusable block of code        | `function greet { echo "Hi $1"; }; greet Dev`   |
+| `exit`               | **Exit** – stop script with status           | `exit 0`                                        |
+| `cron / crontab`     | **Cron Table** – scheduled tasks             | `crontab -e` → `*/5 * * * * /script.sh`         |
 
 ---
 
 ## 🛠️ System Management
 
-| Command                        | Meaning                                     | Example                                            |
-|-------------------------------|---------------------------------------------|----------------------------------------------------|
-| `adduser <name>`              | Add User                                    | `sudo adduser alice`                                |
-| `passwd <user>`               | Change user password                        | `sudo passwd alice`                                 |
-| `usermod -aG <group> <user>`  | Add user to group                           | `sudo usermod -aG sudo alice`                       |
-| `chmod 755 <file>`            | Change Mode (permissions)                   | `chmod 755 script.sh`                               |
-| `chown user:group <file>`     | Change Owner & Group                        | `sudo chown alice:dev file.txt`                     |
-| `umask`                       | User Mask (default permission)              | `umask 022`                                         |
+| Command                    | Full Form / Meaning                           | Example                                 |
+|----------------------------|-----------------------------------------------|------------------------------------------|
+| `adduser`                  | **Add User** – create a new user              | `sudo adduser devuser`                   |
+| `passwd`                   | **Password** – change user password           | `sudo passwd devuser`                    |
+| `usermod -aG`              | **User Modify Add to Group**                  | `sudo usermod -aG sudo devuser`          |
+| `chmod`                    | **Change Mode** – set file permissions        | `chmod 755 script.sh`                    |
+| `chown`                    | **Change Owner** – change file ownership      | `chown user:group file.txt`              |
+| `umask`                    | **User Mask** – default file permission mask  | `umask 022`                              |
 
 ---
 
 ## 🧠 Process & Resource Management
 
-| Command            | Meaning                                  | Example                                          |
-|--------------------|-------------------------------------------|--------------------------------------------------|
-| `top`              | Live process monitoring                   | `top`                                            |
-| `htop`             | Interactive process viewer                | `sudo yum install htop && htop`                 |
-| `ps aux`           | Show all running processes                | `ps aux | grep java`                             |
-| `kill <PID>`       | Terminate a process by PID                | `kill 1234`                                       |
-| `jobs`             | List background jobs                      | `sleep 100 & jobs`                                |
-| `bg`, `fg`         | Background or foreground control          | `jobs; bg %1; fg %1`                              |
-| `nice`, `renice`   | Set/change process priority               | `nice -n 10 myscript.sh` / `renice +5 -p 1234`     |
+| Command        | Full Form / Meaning                          | Example                                     |
+|----------------|----------------------------------------------|---------------------------------------------|
+| `top`          | **Table of Processes** – live view           | `top`                                       |
+| `htop`         | **Human Top** – interactive process viewer   | `sudo yum install htop && htop`             |
+| `ps aux`       | **Process Status** – show all processes      | `ps aux | grep nginx`                       |
+| `kill`         | **Kill Process** – terminate by PID          | `kill 1234`                                 |
+| `jobs`         | **Job List** – list background jobs          | `sleep 100 & jobs`                          |
+| `bg / fg`      | **Background / Foreground**                  | `fg %1`                                     |
+| `nice / renice`| **Set process priority**                     | `nice -n 10 script.sh`                      |
 
 ---
 
 ## 💾 Disk & File System
 
-| Command               | Meaning                                | Example                                          |
-|------------------------|-----------------------------------------|--------------------------------------------------|
-| `df -h`                | Disk Free (human-readable)             | `df -h`                                           |
-| `du -sh *`             | Disk Usage summary                    | `du -sh *`                                        |
-| `mount / umount`       | Mount or unmount FS                    | `sudo mount /dev/xvdf /mnt/data; sudo umount /mnt/data` |
-| `lsblk`                | List Block Devices                     | `lsblk`                                           |
-| `fdisk -l`             | List disk partitions                   | `sudo fdisk -l`                                   |
-| `mkfs.ext4 /dev/xvdf`  | Make ext4 filesystem                   | `sudo mkfs.ext4 /dev/xvdf`                        |
+| Command              | Full Form / Meaning                       | Example                                        |
+|----------------------|--------------------------------------------|------------------------------------------------|
+| `df -h`              | **Disk Free (Human-readable)**            | `df -h`                                        |
+| `du -sh *`           | **Disk Usage Summary (Human-readable)**   | `du -sh *`                                     |
+| `mount / umount`     | **Mount / Unmount** file systems          | `mount /dev/xvdf /mnt`                         |
+| `lsblk`              | **List Block Devices**                    | `lsblk`                                        |
+| `fdisk -l`           | **Format Disk (List partitions)**         | `sudo fdisk -l`                                |
+| `mkfs.ext4`          | **Make File System (ext4 format)**        | `mkfs.ext4 /dev/xvdf`                          |
 
 ---
 
 ## 🔒 Permissions & Security
 
-| Command         | Meaning                                  | Example                                        |
-|------------------|------------------------------------------|------------------------------------------------|
-| `chmod`          | Change file permissions                  | `chmod 644 file.txt`                            |
-| `chown`          | Change file ownership                    | `sudo chown alice:dev file.txt`                 |
-| `ls -l`          | List long format (show permissions)      | `ls -l script.sh`                               |
-| `umask`          | Set default permission mask              | `umask 002`                                     |
-| `sudo visudo`    | Safely edit sudoers file                 | `sudo visudo`                                   |
+| Command        | Full Form / Meaning                          | Example                                        |
+|----------------|----------------------------------------------|------------------------------------------------|
+| `chmod`        | **Change Mode** – file permissions           | `chmod 644 notes.txt`                          |
+| `chown`        | **Change Owner** – file ownership            | `sudo chown ec2-user:ec2-user test.log`        |
+| `ls -l`        | **List Long** – show file details            | `ls -l`                                        |
+| `umask`        | **User Mask** – new file permission default  | `umask 002`                                    |
+| `sudo visudo`  | **Visual Sudo** – safely edit sudo rules     | `sudo visudo`                                  |
 
 ---
 
 ## 🧾 Log & Service Inspection
 
-| Command                             | Meaning                             | Example                                     |
-|-------------------------------------|-------------------------------------|---------------------------------------------|
-| `journalctl`                        | Read systemd logs                  | `journalctl -u sshd.service`                |
-| `tail -f /var/log/syslog`           | Live log on Ubuntu                 | `tail -f /var/log/syslog`                   |
-| `tail -f /var/log/messages`         | Live log on Amazon Linux / CentOS  | `tail -f /var/log/messages`                 |
-| `systemctl status <service>`        | Check service status               | `systemctl status httpd`                    |
-| `systemctl start <service>`         | Start a system service             | `sudo systemctl start httpd`                |
-| `systemctl enable <service>`        | Enable service at boot             | `sudo systemctl enable httpd`               |
+| Command                        | Full Form / Meaning                     | Example                                    |
+|--------------------------------|------------------------------------------|--------------------------------------------|
+| `journalctl`                   | **Journal Control** – view system logs  | `journalctl -u sshd`                        |
+| `tail -f`                      | **Follow File** – show live log         | `tail -f /var/log/syslog`                   |
+| `systemctl status`            | **System Control – Status**             | `systemctl status apache2`                  |
+| `systemctl start / stop`      | **Start / Stop service**                | `sudo systemctl start nginx`                |
+| `systemctl enable`            | **Enable service on boot**              | `sudo systemctl enable nginx`               |
 
 ---
 
+## 📋 Quick Tips
 
+| Command            | Full Form / Meaning                          | Example                          |
+|--------------------|----------------------------------------------|----------------------------------|
+| `man <command>`    | **Manual** – help guide for commands         | `man ls`                         |
+| `command --help`   | Show help options for any command            | `ps --help`                      |
