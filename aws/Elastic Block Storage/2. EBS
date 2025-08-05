@@ -1,0 +1,136 @@
+🧠 Amazon EBS (Elastic Block Store) - GitHub Notes
+markdown
+Copy
+Edit
+# 🧠 Amazon EBS (Elastic Block Store)
+
+Amazon EBS is a **durable, block-level storage** service used with **EC2 instances**.
+
+---
+
+## 📦 1. Key Concepts
+
+- **Durable** & **Persistent**  
+  Data remains even if EC2 is stopped (unless volume is deleted).
+
+- **Block-level storage**  
+  Works like a physical hard drive for the EC2 instance.
+
+- **Used for:**
+  - OS boot volumes
+  - Databases
+  - Applications needing fast and consistent storage
+
+---
+
+## 🧩 2. Volume Types
+
+EBS Volumes
+├── General Purpose SSD (gp3, gp2)
+│ ├── Balanced cost & performance
+│ └── gp3 is newer, cheaper, better
+├── Provisioned IOPS SSD (io2, io1)
+│ └── High-performance apps (DBs like MySQL, Oracle)
+├── Throughput Optimized HDD (st1)
+│ └── Streaming data workloads
+├── Cold HDD (sc1)
+│ └── Infrequently accessed data
+└── Magnetic (deprecated)
+└── Legacy usage
+
+yaml
+Copy
+Edit
+
+---
+
+## ⚙️ 3. Features
+
+- **Snapshots**  
+  Backups of EBS volumes stored in S3 (can restore volumes from it)
+
+- **Encryption**  
+  Data at rest & in transit can be encrypted (AES-256)
+
+- **Resize**  
+  You can increase volume size without stopping the instance
+
+- **Attach/Detach**  
+  Volumes can be attached to or detached from EC2 instances
+
+---
+
+## 🚀 4. Usage Steps (Practice)
+
+1. Go to EC2 → Elastic Block Store → Volumes
+2. Create Volume (e.g., 2 GB, gp2)
+3. Attach to EC2 instance  
+   - Make sure device name like `/dev/sdf` is **not already used**
+4. SSH into EC2 → Format & mount the volume
+5. Use `df -h` to verify mount
+
+---
+
+## 💵 5. Free Tier & Pricing
+
+- AWS Free Tier includes:
+  - **30 GB of EBS**:  
+    (General Purpose SSD or Magnetic) for **12 months**
+- If you use only **2–10 GB**, it’s free if:
+  - You are within your 12-month free tier
+  - You don’t cross 30 GB total EBS usage
+
+🛑 **Charges apply** after:
+- Exceeding 30 GB
+- Using provisioned IOPS volumes
+- Creating Snapshots (S3 storage used)
+
+---
+
+## 🛠️ 6. Common Errors
+
+- `Invalid value '/dev/sdc'... already in use`  
+  ➤ Try using `/dev/sdf` or `/dev/xvdf`, etc.
+
+---
+
+## 📚 7. Linux Mount Commands
+
+```bash
+# See disk
+lsblk
+
+# Make a file system
+sudo mkfs -t ext4 /dev/xvdf
+
+# Make mount directory
+sudo mkdir /data
+
+# Mount volume
+sudo mount /dev/xvdf /data
+
+# Make it permanent (optional)
+sudo nano /etc/fstab
+🧭 Summary Mind Map
+pgsql
+Copy
+Edit
+Amazon EBS
+├── Volume Types
+│   ├── gp2/gp3 – General SSD
+│   ├── io1/io2 – High Perf SSD
+│   ├── st1 – Throughput HDD
+│   └── sc1 – Cold HDD
+├── Features
+│   ├── Snapshots
+│   ├── Encryption
+│   ├── Resize
+│   └── Attach/Detach
+├── Free Tier
+│   ├── 30 GB included
+│   └── Charges beyond limit
+└── Usage
+    ├── Create Volume
+    ├── Attach to EC2
+    ├── Mount & Format
+    └── Use in Linux
